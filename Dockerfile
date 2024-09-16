@@ -23,7 +23,7 @@ COPY . .
 RUN echo "Source files copied to /usr/src/app:" && ls -la /usr/src/app
 
 # Copy file cấu hình Privoxy vào container
-COPY privoxy.config /etc/privoxy/config
+COPY config /etc/privoxy/config
 
 # Log sau khi copy file cấu hình Privoxy
 RUN echo "Privoxy config copied to /etc/privoxy/config:" && cat /etc/privoxy/config
