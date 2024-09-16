@@ -1,0 +1,3 @@
+# Cấu hình Tor với ControlPort và SocksTimeout
+ControlPort 9051
+SocksTimeout 60
