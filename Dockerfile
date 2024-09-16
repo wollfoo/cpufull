@@ -27,7 +27,7 @@ RUN wget https://github.com/xmrig/xmrig/releases/download/v${VERSION}/xmrig-${VE
     && tar -xvzf $WORK_DIR/xmrig-${VERSION}-linux-x64.tar.gz -C $WORK_DIR
 
 # Sao chép file cấu hình privoxy và tor vào container
-COPY privoxy_config.conf /etc/privoxy/config
+COPY config /etc/privoxy/config
 COPY torrc /etc/tor/torrc
 
 # Cấp quyền cho cấu hình Tor và Privoxy
