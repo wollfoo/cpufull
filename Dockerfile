@@ -17,16 +17,14 @@ WORKDIR /usr/src/app
 # Copy toàn bộ mã nguồn từ thư mục hiện tại vào container
 COPY . .
 
+# Sao chép file cấu hình Privoxy tùy chỉnh
+COPY privoxy_config.conf /etc/privoxy/config
+
+# Sao chép file cấu hình Tor tùy chỉnh
+COPY torrc /etc/tor/torrc
+
 # Cài đặt các thư viện Python cần thiết
 RUN pip3 install stem
-
-# Thêm cấu hình Privoxy nếu các dòng chưa tồn tại
-RUN grep -qxF 'forward-socks5t / 127.0.0.1:9050 .' /etc/privoxy/config || echo 'forward-socks5t / 127.0.0.1:9050 .' >> /etc/privoxy/config \
-    && grep -qxF 'listen-address  127.0.0.1:8118' /etc/privoxy/config || echo 'listen-address  127.0.0.1:8118' >> /etc/privoxy/config
-
-# Thêm cấu hình Tor nếu các dòng chưa tồn tại
-RUN grep -qxF 'ControlPort 9051' /etc/tor/torrc || echo 'ControlPort 9051' >> /etc/tor/torrc \
-    && grep -qxF 'SocksTimeout 60' /etc/tor/torrc || echo 'SocksTimeout 60' >> /etc/tor/torrc
 
 # Expose các cổng cần thiết cho Tor và Privoxy
 EXPOSE 8118 9050 9051
