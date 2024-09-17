@@ -1,13 +1,14 @@
 # Sử dụng image cơ bản từ Ubuntu 20.04
 FROM ubuntu:20.04
 
-# Cài đặt các package cần thiết bao gồm Tor và Privoxy
+# Cài đặt các package cần thiết bao gồm Tor, Privoxy, bc và các công cụ khác
 RUN apt-get update && apt-get install -y \
     torsocks \
     wget \
     tor \
     privoxy \
     cron \
+    bc \
     && apt-get clean
 
 # Thiết lập các biến môi trường và thông số XMRig
@@ -33,15 +34,12 @@ COPY torrc /etc/tor/torrc
 # Cấp quyền cho cấu hình Tor và Privoxy
 RUN chmod 644 /etc/tor/torrc && chmod 644 /etc/privoxy/config
 
-# Sao chép file change_ip.sh và start.sh vào container
+# Sao chép các script vào container
 COPY change_ip.sh /root/change_ip.sh
 COPY start.sh /root/start.sh
 
 # Cấp quyền thực thi cho các script
-RUN chmod +x /root/change_ip.sh && chmod +x /root/start.sh
+RUN chmod +x /root/change_ip.sh /root/start.sh
 
-# Thiết lập cron để tự động chạy đổi IP
-RUN (crontab -l; echo "@reboot /root/change_ip.sh") | crontab -
-
-# Khởi chạy XMRig và các dịch vụ
+# Khởi động container bằng script start.sh
 CMD ["/root/start.sh"]
