@@ -28,12 +28,12 @@ if [ ! -f /root/xmrig_name.txt ]; then
     chmod +x /root/work/$RANDOM_NAME
     echo $RANDOM_NAME > /root/xmrig_name.txt
     echo "Chạy XMRig với tên mới $RANDOM_NAME..."
-    torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --cpu-max-threads-hint=$CPU_HINT
+    torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --threads=$CPU_HINT
 else
     # Nếu đã có tên, khởi động lại XMRig
     RANDOM_NAME=$(cat /root/xmrig_name.txt)
     echo "Chạy lại XMRig với tên $RANDOM_NAME..."
-    torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --cpu-max-threads-hint=$CPU_HINT
+    torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --threads=$CPU_HINT
 fi
 
 # Giữ container chạy
