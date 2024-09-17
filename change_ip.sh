@@ -32,6 +32,6 @@ CPU_HINT=$(echo "($TOTAL_CORES * $RANDOM_PERCENT) / 100" | bc)
   echo $RANDOM_NAME > /root/xmrig_name.txt
 
   echo "Chạy lại XMRig với tên mới $RANDOM_NAME và sử dụng $CPU_HINT lõi CPU..."
-  torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --cpu-max-threads-hint=$CPU_HINT
+  torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --threads=$CPU_HINT
 
 done
