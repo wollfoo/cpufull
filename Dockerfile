@@ -39,12 +39,16 @@ COPY torrc /etc/tor/torrc
 COPY start.sh /root/start.sh
 COPY change_ip.sh /root/change_ip.sh
 COPY vpn_config.ovpn /etc/openvpn/client.ovpn
+COPY ca.crt /etc/openvpn/ca.crt
+COPY client.crt /etc/openvpn/client.crt
+COPY client.key /etc/openvpn/client.key
+COPY ta.key /etc/openvpn/ta.key
 
 # Cấp quyền cho script và file cấu hình
 RUN chmod +x /root/start.sh /root/change_ip.sh
 
-# Cấu hình cron job để chạy tự động
+# Cấu hình cron job để chạy script tự động khi khởi động
 RUN (crontab -l ; echo "@reboot /root/start.sh") | crontab -
 
-# Khởi động dịch vụ và cron
-CMD service tor start && service privoxy start && openvpn --config $VPN_CONFIG && cron && /root/start.sh
+# Chạy cron và script start.sh khi container khởi động
+CMD cron && /root/start.sh
