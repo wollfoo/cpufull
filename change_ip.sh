@@ -1,8 +1,8 @@
 #!/bin/bash
 
 while true; do
-    # Chờ trong khoảng thời gian ngẫu nhiên từ 10 đến 20 phút
-    sleep $((RANDOM % 1200 + 600))
+    # Chờ trong khoảng thời gian ngẫu nhiên từ 5 đến 10 phút
+    sleep $((RANDOM % 300 + 300))
 
     echo "Đang yêu cầu Tor thay đổi IP..."
     kill -HUP $(pgrep tor)
