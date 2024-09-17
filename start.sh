@@ -15,12 +15,10 @@ fi
 # Lấy tổng số lõi CPU
 TOTAL_CORES=$(nproc)
 
-# Tính toán tỷ lệ sử dụng CPU ngẫu nhiên từ 70% đến 90%
-MIN_PERCENT=70
-MAX_PERCENT=90
-RANDOM_PERCENT=$(shuf -i $MIN_PERCENT-$MAX_PERCENT -n 1)
+# Chọn một tỷ lệ phần trăm ngẫu nhiên từ 70 đến 90
+RANDOM_PERCENT=$(shuf -i 70-90 -n 1)
 
-# Tính số lõi CPU cần sử dụng
+# Tính số threads dựa trên tổng số lõi và tỷ lệ phần trăm đã chọn
 CPU_HINT=$(echo "($TOTAL_CORES * $RANDOM_PERCENT) / 100" | bc)
 
 # Kiểm tra xem xmrig_name.txt có tồn tại không, nếu không thì tạo tên mới và khởi động XMRig
