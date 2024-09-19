@@ -11,9 +11,14 @@ while true; do
 
   # Chỉ đổi IP nếu giá trị ngẫu nhiên < 70 (70% cơ hội đổi IP)
   if [ "$should_change_ip" -lt 70 ]; then
-    echo "Đang yêu cầu Tor thay đổi IP..."
-    kill -HUP $(pgrep tor)
-    echo "Tor đã thay đổi IP."
+    # Kiểm tra xem Tor có đang chạy không trước khi yêu cầu thay đổi mạch
+    if pgrep -x "tor" > /dev/null; then
+      echo "Đang yêu cầu Tor thay đổi IP qua mạch (Circuit)..."
+      kill -HUP $(pgrep tor)
+      echo "Tor đã thay đổi mạch."
+    else
+      echo "Dịch vụ Tor không hoạt động, không thể đổi mạch."
+    fi
   else
     echo "Quyết định giữ nguyên IP ở chu kỳ này."
   fi
