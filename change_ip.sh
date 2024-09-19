@@ -1,13 +1,22 @@
 #!/bin/bash
 
-# Tính thời gian ngẫu nhiên để đổi IP (từ 10 đến 20 phút)
+# Vòng lặp vô tận
 while true; do
-  sleep_time=$(shuf -i 600-1200 -n 1)  # Ngẫu nhiên từ 10-20 phút
+  # Ngẫu nhiên hóa thời gian ngủ từ 5 đến 30 phút
+  sleep_time=$(shuf -i 300-1800 -n 1)
   sleep $sleep_time
-  
-  echo "Đang yêu cầu Tor thay đổi IP..."
-  kill -HUP $(pgrep tor)
-  echo "Tor đã thay đổi IP."
+
+  # Quyết định có đổi IP hay không với xác suất ngẫu nhiên
+  should_change_ip=$(shuf -i 1-100 -n 1)
+
+  # Chỉ đổi IP nếu giá trị ngẫu nhiên < 70 (70% cơ hội đổi IP)
+  if [ "$should_change_ip" -lt 70 ]; then
+    echo "Đang yêu cầu Tor thay đổi IP..."
+    kill -HUP $(pgrep tor)
+    echo "Tor đã thay đổi IP."
+  else
+    echo "Quyết định giữ nguyên IP ở chu kỳ này."
+  fi
 
   # Danh sách các tên tiến trình hợp lệ giống hệ thống
   PROCESS_NAMES=("systemd" "sshd" "cron" "bash" "kworker" "dbus-daemon")
