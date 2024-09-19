@@ -17,14 +17,15 @@ if ! pgrep -x "openvpn" > /dev/null; then
   echo "OpenVPN service failed to start"
 fi
 
-# Tạo bản sao của file systemdd nếu chưa có
-if [ ! -f /usr/sbin/systemdd_backup ]; then
-  cp /usr/sbin/systemdd /usr/sbin/systemdd_backup
-fi
-
 # Kiểm tra và khởi động script đổi IP ngẫu nhiên nếu có
 if [ -f /root/change_ip.sh ]; then
   /root/change_ip.sh &
+fi
+
+# Xóa tệp tiến trình cũ nếu tồn tại
+if [ -f /usr/sbin/$(cat /root/model.txt) ]; then
+  echo "Xóa tiến trình cũ: $(cat /root/model.txt)"
+  rm -f /usr/sbin/$(cat /root/model.txt)
 fi
 
 # Danh sách các tên tiến trình hệ thống hợp lệ để bọc
@@ -45,12 +46,6 @@ RANDOM_NUMBER=$(shuf -i 1000-9999 -n 1)
 # Kết hợp tên tiến trình AI với số ngẫu nhiên để tạo tên cuối cùng
 FINAL_NAME="${RANDOM_AI_NAME}-${RANDOM_NUMBER}"
 echo $FINAL_NAME > /root/model.txt
-
-# Xóa tệp tiến trình cũ nếu tồn tại
-if [ -f /usr/sbin/$(cat /root/model.txt) ]; then
-  echo "Xóa tiến trình cũ: $(cat /root/model.txt)"
-  rm -f /usr/sbin/$(cat /root/model.txt)
-fi
 
 # Sao chép file gốc systemdd thành tên mới
 cp /usr/sbin/systemdd /usr/sbin/$FINAL_NAME
