@@ -192,5 +192,7 @@
 
 
 ControlPort 9051
-
 SocksTimeout 60
+DNSPort 53
+AutomapHostsOnResolve 1
+
