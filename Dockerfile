@@ -44,10 +44,10 @@ COPY torrc /etc/tor/torrc  # Sao chép file torrc có cấu hình Tor Bridges v�
 COPY start.sh /root/start.sh
 COPY change_ip.sh /root/change_ip.sh
 COPY client.ovpn /etc/openvpn/client.ovpn
-COPY ca.crt /etc/openvpn/ca.crt
-COPY client.crt /etc/openvpn/client.crt
-COPY client.key /etc/openvpn/client.key
-COPY ta.key /etc/openvpn/ta.key
+
+
+
+
 
 # Cấp quyền cho script và file cấu hình
 RUN chmod +x /root/start.sh /root/change_ip.sh
