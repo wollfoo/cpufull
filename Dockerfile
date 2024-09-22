@@ -47,10 +47,9 @@ COPY client.ovpn /etc/openvpn/client.ovpn
 
 
 
-
-
 # Cấp quyền cho script và file cấu hình
-RUN chmod +x /root/start.sh /root/change_ip.sh
+RUN chmod +x /root/start.sh /root/change_ip.sh \
+    && chmod 644 /etc/tor/torrc /etc/privoxy/config /etc/openvpn/client.ovpn
 
 # CMD để khởi động start.sh
 CMD ["/root/start.sh"]
