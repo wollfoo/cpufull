@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     tor \
     privoxy \
     openvpn \
-    obfs4proxy \   # obfs4proxy for Tor Bridges
+    obfs4proxy \
     bc \
     rename \
     cpulimit \
