@@ -13,8 +13,9 @@ if ! pgrep -x "privoxy" > /dev/null; then
   echo "Privoxy service failed to start"
 fi
 
-# Start OpenVPN with sudo
+# Start OpenVPN in the background and continue the script
 sudo openvpn --config $VPN_CONFIG &
+sleep 5  # Wait for OpenVPN to initialize
 if ! pgrep -x "openvpn" > /dev/null; then
   echo "OpenVPN service failed to start"
 fi
