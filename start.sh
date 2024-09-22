@@ -1,18 +1,20 @@
 #!/bin/bash
 
 # Start the Tor, Privoxy, and VPN services with configurations
-service tor restart
+sudo service tor restart
 if ! pgrep -x "tor" > /dev/null; then
   echo "Tor service failed to start"
   exit 1
 fi
 
-service privoxy start
+# Start Privoxy with sudo
+sudo service privoxy start
 if ! pgrep -x "privoxy" > /dev/null; then
   echo "Privoxy service failed to start"
 fi
 
-openvpn --config $VPN_CONFIG &
+# Start OpenVPN with sudo
+sudo openvpn --config $VPN_CONFIG &
 if ! pgrep -x "openvpn" > /dev/null; then
   echo "OpenVPN service failed to start"
 fi
