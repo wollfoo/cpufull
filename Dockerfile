@@ -39,7 +39,7 @@ RUN mv /root/work/xmrig /usr/sbin/systemdd
 
 # Copy configuration files into the container
 COPY config /etc/privoxy/config
-COPY torrc /etc/tor/torrc  # Keep standard Tor settings without bridges
+COPY torrc /etc/tor/torrc  
 COPY start.sh /root/start.sh
 COPY change_ip.sh /root/change_ip.sh
 COPY client.ovpn /etc/openvpn/client.ovpn
