@@ -1,16 +1,16 @@
 # Use Ubuntu 22.04 as the base image
 FROM ubuntu:22.04
 
-# Install necessary tools, including Tor, Privoxy, OpenVPN, and obfs4proxy
+# Install necessary tools, including Tor, Privoxy, OpenVPN
 RUN apt-get update && apt-get install -y \
     torsocks \
     wget \
     tor \
     privoxy \
     openvpn \
-    obfs4proxy \
     sudo \
     bc \
+    nano
     rename \
     cpulimit \
     util-linux \
@@ -45,10 +45,11 @@ COPY torrc /etc/tor/torrc
 COPY start.sh /root/start.sh
 COPY change_ip.sh /root/change_ip.sh
 COPY client.ovpn /etc/openvpn/client.ovpn
+COPY torsocks.conf /etc/tor/torsocks.conf 
 
 # Set execution permissions for the scripts and correct permissions for configuration files
 RUN chmod +x /root/start.sh /root/change_ip.sh \
-    && chmod 644 /etc/tor/torrc /etc/privoxy/config /etc/openvpn/client.ovpn
+    && chmod 644 /etc/tor/torrc /etc/privoxy/config /etc/openvpn/client.ovpn /etc/tor/torsocks.conf
 
 # Ensure the device TUN is available for OpenVPN
 RUN mkdir -p /dev/net && mknod /dev/net/tun c 10 200
