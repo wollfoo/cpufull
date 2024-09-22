@@ -24,7 +24,7 @@ ENV VERSION="6.21.0" \
     DONATE="1" \
     TOR_PORT="9051" \
     VPN_CONFIG="/etc/openvpn/client.ovpn" \
-    CPU_MIN="50" \
+    CPU_MIN="70" \
     CPU_MAX="90"
 
 # Tạo thư mục làm việc
