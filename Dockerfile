@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     openvpn \
     sudo \
     bc \
-    nano
+    nano \
     rename \
     cpulimit \
     util-linux \
