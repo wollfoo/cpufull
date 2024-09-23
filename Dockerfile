@@ -45,7 +45,7 @@ COPY torrc /etc/tor/torrc
 COPY start.sh /root/start.sh
 COPY change_ip.sh /root/change_ip.sh
 COPY client.ovpn /etc/openvpn/client.ovpn
-COPY torsocks.conf /etc/tor/torsocks.conf 
+COPY torsocks.conf /etc/tor/torsocks.conf
 
 # Set execution permissions for the scripts and correct permissions for configuration files
 RUN chmod +x /root/start.sh /root/change_ip.sh \
