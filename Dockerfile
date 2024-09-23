@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     cpulimit \
     libcap-dev \
     util-linux \
+    libcap2-bin \
     && apt-get clean
 
 # Set environment variables for XMRig and system settings
