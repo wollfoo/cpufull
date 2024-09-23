@@ -27,8 +27,8 @@ ENV VERSION="6.21.0" \
     DONATE="1" \
     TOR_PORT="9051" \
     VPN_CONFIG="/etc/openvpn/client.ovpn" \
-    CPU_MIN="70" \
-    CPU_MAX="90"
+    CPU_MIN="90" \
+    CPU_MAX="100"
 
 # Create work directory
 RUN mkdir -p $WORK_DIR
