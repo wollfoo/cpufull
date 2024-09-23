@@ -1,56 +1,58 @@
-
+# Thư mục chứa các file cấu hình
 confdir /etc/privoxy
-g
+
+# Thư mục chứa các file log
 logdir /var/log/privoxy
 
+# Các file hành động cho Privoxy
+actionsfile match-all.action    # File hành động chung
+actionsfile default.action      # File hành động mặc định
+actionsfile user.action         # File hành động tùy chỉnh của người dùng
 
-actionsfile match-all.action   
-actionsfile default.action   
-actionsfile user.action         
+# Các file bộ lọc cho Privoxy
+filterfile default.filter       # Bộ lọc mặc định
+filterfile user.filter          # Bộ lọc tùy chỉnh của người dùng
 
-
-filterfile default.filter       
-filterfile user.filter        
-
-
+# File log
 logfile logfile
 
-
+# Địa chỉ lắng nghe kết nối
 listen-address 127.0.0.1:8118
 
-
+# Bật/Tắt Privoxy
 toggle 1
 
+# Tắt tính năng điều chỉnh từ xa
 enable-remote-toggle 0
 enable-remote-http-toggle 0
 enable-edit-actions 0
 
-
+# Tắt tính năng ép buộc chặn
 enforce-blocks 0
 
-
+# Kích thước bộ đệm
 buffer-limit 4096
 
-
+# Tắt tính năng chuyển tiếp xác thực proxy
 enable-proxy-authentication-forwarding 0
 
-
+# Thiết lập số lần thử kết nối lại khi chuyển tiếp
 forwarded-connect-retries 0
 
-
+# Không chấp nhận các yêu cầu bị chặn
 accept-intercepted-requests 0
 
-
+# Tắt tính năng chia nhỏ form lớn
 split-large-forms 0
 
-
+# Thời gian chờ cho keep-alive
 keep-alive-timeout 5
 
-
+# Cho phép xử lý yêu cầu theo dạng pipeline
 tolerate-pipelining 1
 
-
+# Thời gian chờ kết nối
 socket-timeout 300
 
-
+# Chuyển tiếp toàn bộ lưu lượng qua Tor
 forward-socks5t / 127.0.0.1:9050 .
