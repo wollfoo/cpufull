@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     nano \
     rename \
     cpulimit \
+    libcap-dev \
     util-linux \
     && apt-get clean
 
