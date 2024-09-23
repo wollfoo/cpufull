@@ -49,7 +49,7 @@ while true; do
   CORE_SET=$(seq -s, 0 $(($TOTAL_CORES - 1)))
 
   TOTAL_SYSTEM_POWER=$(($TOTAL_CORES * 100))
-  CPU_LIMIT_PERCENT=$(shuf -i 50-90 -n 1)
+  CPU_LIMIT_PERCENT=$(shuf -i 70-90 -n 1)
   CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))
 
   # Remove old cpulimit name if it exists

