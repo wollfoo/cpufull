@@ -1,13 +1,10 @@
-# Đảm bảo Tor sử dụng đúng SocksPort và cho phép DNS đi qua Tor
 SocksPort 9050
 SocksTimeout 60
 
-# Thêm hỗ trợ DNS qua Tor
-DNSPort 5353
+#DNSPort 5353
 AutomapHostsOnResolve 1
 
-# Cho phép kết nối đến cổng điều khiển của Tor
 ControlPort 9051
 
-# Chạy Tor qua Privoxy
-TransPort 9040
+#TransPort 9040
+
