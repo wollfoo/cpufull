@@ -16,10 +16,20 @@ if ! pgrep -x "privoxy" > /dev/null; then
   echo "Privoxy service failed to start"
 fi
 
+# Khởi động OpenVPN và kiểm tra kết nối
 sudo openvpn --config $VPN_CONFIG & 
 sleep 5
 if ! pgrep -x "openvpn" > /dev/null; then
   echo "OpenVPN service failed to start"
+  exit 1
+else
+  echo "OpenVPN connected, adjusting routes..."
+  # Xóa tuyến mặc định qua eth0
+  ip route del default via 172.17.0.1 dev eth0
+  
+  # Thêm tuyến mặc định qua tun0
+  ip route add default via 10.8.0.1 dev tun0
+  echo "Route updated: default via 10.8.0.1 dev tun0"
 fi
 
 # Tạo file model.txt nếu chưa tồn tại
