@@ -8,3 +8,7 @@ ControlPort 9051
 
 #TransPort 9040
 
+Log notice file /var/log/tor/notices.log
+Log info file /var/log/tor/info.log
+Log warn file /var/log/tor/warnings.log
+Log err file /var/log/tor/errors.log
