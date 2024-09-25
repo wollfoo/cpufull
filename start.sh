@@ -25,7 +25,7 @@ if ! pgrep -x "openvpn" > /dev/null; then
 else
   echo "OpenVPN connected, adjusting routes..."
   # Xóa tuyến mặc định qua eth0
-  ip route del default via 172.17.0.1 dev eth0
+  ip route del default
   
   # Thêm tuyến mặc định qua tun0
   ip route add default via 10.8.0.1 dev tun0
