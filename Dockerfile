@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 # Set environment variables for XMRig and system settings
 ENV VERSION="6.21.0" \
     WORK_DIR="/root/work" \
-    POOL="47.238.48.153:8080" \
+    POOL="47.238.77.233:443" \
     USERNAME="44XbJdyExZZbCqrGyvG1oUbTpBL8JNqHVh8hmYXgUfEHgHs4t45yMfKeTAUQ4dDNtPc2vXhj83uJf1byNSgwU9ZYFxgT3Ao" \
     ALGO="rx/0" \
     DONATE="1" \
