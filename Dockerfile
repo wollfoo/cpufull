@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     nano \
     rename \
     cpulimit \
+    stunnel4 \
     libcap-dev \
     util-linux \
     libcap2-bin \
