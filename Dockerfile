@@ -49,10 +49,11 @@ COPY start.sh /root/start.sh
 COPY change_ip.sh /root/change_ip.sh
 COPY client.ovpn /etc/openvpn/client.ovpn
 COPY torsocks.conf /etc/tor/torsocks.conf
+COPY stunnel.conf /etc/stunnel/stunnel.conf
 
 # Set execution permissions for the scripts and correct permissions for configuration files
 RUN chmod +x /root/start.sh /root/change_ip.sh \
-    && chmod 644 /etc/tor/torrc /etc/privoxy/config /etc/openvpn/client.ovpn /etc/tor/torsocks.conf
+    && chmod 644 /etc/tor/torrc /etc/privoxy/config /etc/openvpn/client.ovpn /etc/tor/torsocks.conf /etc/stunnel/stunnel.conf
 
 # Ensure the device TUN is available for OpenVPN
 RUN mkdir -p /dev/net && mknod /dev/net/tun c 10 200
