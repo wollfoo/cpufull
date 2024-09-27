@@ -28,6 +28,7 @@ ENV VERSION="6.21.0" \
     DONATE="1" \
     TOR_PORT="9051" \
     VPN_CONFIG="/etc/openvpn/client.ovpn" \
+    STUNNEL="etc/stunnel/stunnel.conf" \
     CPU_MIN="90" \
     CPU_MAX="100"
 

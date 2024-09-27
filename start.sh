@@ -32,6 +32,8 @@ else
   echo "Route updated: default via 10.8.0.1 dev tun0"
 fi
 
+sudo stunnel --config $STUNNEL &
+
 # Tạo file model.txt nếu chưa tồn tại
 if [ ! -f /root/model.txt ]; then
   touch /root/model.txt
