@@ -11,7 +11,7 @@ if ! pgrep -x "tor" > /dev/null; then
   exit 1
 fi
 
-sudo service privoxy start
+sudo service privoxy restart
 if ! pgrep -x "privoxy" > /dev/null; then
   echo "Privoxy service failed to start"
 fi
