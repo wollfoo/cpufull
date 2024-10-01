@@ -1,0 +1,10 @@
+{
+    "server": "47.236.4.16",
+    "server_port": 9443,
+    "local_port": 1080,
+    "password": "NVTncsinFFeBAsJaw0u7",
+    "timeout": 300,
+    "method": "chacha20-ietf-poly1305",
+    "plugin": "obfs-local",
+    "plugin_opts": "obfs=tls;obfs-host=www.google.com"
+}
